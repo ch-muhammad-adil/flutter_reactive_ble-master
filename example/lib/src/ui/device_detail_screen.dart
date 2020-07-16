@@ -51,76 +51,87 @@ class _DeviceDetail extends StatelessWidget {
   bool _deviceConnected() =>
       connectionUpdate.connectionState == DeviceConnectionState.connected;
 
+  void _readCharacteristics() {
+    deviceConnector.flutter_ble.readCharacteristic(QualifiedCharacteristic(
+      deviceId: device.id,
+      serviceId: Uuid.parse("0000fff0-0000-1000-8000-00805f9b34fb"),
+      characteristicId: Uuid.parse("0000fff1-0000-1000-8000-00805f9b34fb"),
+    ));
+  }
+
   @override
-  Widget build(BuildContext context) => WillPopScope(
-        onWillPop: () async {
-          disconnect(device.id);
-          return true;
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(device.name ?? "unknown"),
-          ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "ID: ${connectionUpdate.deviceId}",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
+  Widget build(BuildContext context) {
+    if (_deviceConnected()) {
+      _readCharacteristics();
+    }
+    return WillPopScope(
+      onWillPop: () async {
+        disconnect(device.id);
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(device.name ?? "unknown"),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "ID: ${connectionUpdate.deviceId}",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Status: ${connectionUpdate.connectionState}",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Status: ${connectionUpdate.connectionState}",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                StreamBuilder<ConnectionStateUpdate>(
-                    stream: deviceConnector.flutter_ble.connectedDeviceStream,
-                    builder: (context, snapshot) {
-                      return Container(
-                        child: Text(snapshot.data.toString()),
-                      );
-                    }),
-                StreamBuilder<CharacteristicValue>(
-                    stream:deviceConnector.flutter_ble.characteristicValueStream,
-                    builder: (context, snapshot) {
-                      return Container(
-                        child: Text(snapshot.data.toString()),
-                      );
-                  }
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: RaisedButton(
-                        onPressed: !_deviceConnected()
-                            ? () => connect(device.id)
-                            : null,
-                        child: const Text("Connect"),
-                      ),
+              ),
+              StreamBuilder<ConnectionStateUpdate>(
+                  stream: deviceConnector.flutter_ble.connectedDeviceStream,
+                  builder: (context, snapshot) {
+                    return Container(
+                      child: Text(snapshot.data.toString()),
+                    );
+                  }),
+              StreamBuilder<CharacteristicValue>(
+                  stream: deviceConnector.flutter_ble.characteristicValueStream,
+                  builder: (context, snapshot) {
+                    return Container(
+                      child: Text(snapshot.data.toString()),
+                    );
+                  }),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RaisedButton(
+                      onPressed:
+                          !_deviceConnected() ? () => connect(device.id) : null,
+                      child: const Text("Connect"),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: RaisedButton(
-                        onPressed: _deviceConnected()
-                            ? () => disconnect(device.id)
-                            : null,
-                        child: const Text("Disconnect"),
-                      ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: RaisedButton(
+                      onPressed: _deviceConnected()
+                          ? () => disconnect(device.id)
+                          : null,
+                      child: const Text("Disconnect"),
                     ),
-                  ],
-                )
-              ],
-            ),
+                  ),
+                ],
+              )
+            ],
           ),
         ),
-      );
+      ),
+    );
+  }
 }

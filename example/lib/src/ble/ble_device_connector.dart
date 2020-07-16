@@ -19,13 +19,14 @@ class BleDeviceConnector extends ReactiveState<ConnectionStateUpdate> {
     if (_connection != null) {
       await _connection.cancel();
     }
-    _connection = flutter_ble.connectToDevice(id: deviceId).listen(
-          _deviceConnectionController.add,
-        );
-    
-    _connection.onData((data) {
-      print(data);
+    _connection = flutter_ble.connectToDevice(id: deviceId).listen(_deviceConnectionController.add,onDone: (){
+      _connection.onData((data) {
+        print(data);
+      });
+
     });
+
+
   }
 
   Future<void> disconnect(String deviceId) async {
