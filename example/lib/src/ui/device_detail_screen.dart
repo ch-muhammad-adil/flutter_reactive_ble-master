@@ -96,14 +96,14 @@ class _DeviceDetail extends StatelessWidget {
                   stream: deviceConnector.flutter_ble.connectedDeviceStream,
                   builder: (context, snapshot) {
                     return Container(
-                      child: Text(snapshot.data.toString()),
+                      child: snapshot.data!=null?Text(snapshot.data.toString()):Container(),
                     );
                   }),
               StreamBuilder<CharacteristicValue>(
                   stream: deviceConnector.flutter_ble.characteristicValueStream,
                   builder: (context, snapshot) {
                     return Container(
-                      child: Text(snapshot.data.toString()),
+                      child: snapshot.data!=null?Text(snapshot.data.toString()):Container(),
                     );
                   }),
               Row(
