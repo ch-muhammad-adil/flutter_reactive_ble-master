@@ -56,7 +56,11 @@ class _DeviceDetail extends StatelessWidget {
       deviceId: device.id,
       serviceId: Uuid.parse("0000fff0-0000-1000-8000-00805f9b34fb"),
       characteristicId: Uuid.parse("0000fff1-0000-1000-8000-00805f9b34fb"),
-    ));
+    )).then((value){
+      print(value);
+    },onError: (){
+      print("error");
+    });
   }
 
   @override
