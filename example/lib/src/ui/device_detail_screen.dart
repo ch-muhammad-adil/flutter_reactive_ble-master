@@ -52,15 +52,19 @@ class _DeviceDetail extends StatelessWidget {
       connectionUpdate.connectionState == DeviceConnectionState.connected;
 
   void _readCharacteristics() {
-    deviceConnector.flutter_ble.readCharacteristic(QualifiedCharacteristic(
+    deviceConnector.flutter_ble.subscribeToCharacteristic(QualifiedCharacteristic(
       deviceId: device.id,
       serviceId: Uuid.parse("0000fff0-0000-1000-8000-00805f9b34fb"),
       characteristicId: Uuid.parse("0000fff1-0000-1000-8000-00805f9b34fb"),
-    )).then((value){
+    )).listen((data) {
+//      var value = double.parse((data[1].toRadixString(16)+data[2].toRadixString(16)).toString(), radix: 16);
+      var value = double.parse((data[1].toRadixString(16)+data[2].toRadixString(16)).toString());
+      // then div by 10 -> run C to F formula
+      // trigger cam capture, timestamp
       print(value);
-    },onError: (){
-      print("error");
+
     });
+
   }
 
   @override
